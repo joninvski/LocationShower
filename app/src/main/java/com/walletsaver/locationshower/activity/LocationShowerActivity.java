@@ -20,6 +20,7 @@ import com.walletsaver.locationshower.R;
 
 import java.util.List;
 import timber.log.Timber;
+import android.widget.TextView;
 
 public class LocationShowerActivity extends FullscreenActivity {
 
@@ -30,6 +31,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     private Location mLastLocationReading;
 
     @InjectView(R.id.dummy_button) Button refreshButton;
+    @InjectView(R.id.fullscreen_content) TextView positionTextView;
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +47,10 @@ public class LocationShowerActivity extends FullscreenActivity {
     @OnClick(R.id.dummy_button)
     protected void refreshPosition(Button button) {
         mLastLocationReading = getLastKnownLocation();
-        Timber.d("Location: " + mLastLocationReading.getLatitude() + " / " + mLastLocationReading.getLongitude());
+        double latitude = mLastLocationReading.getLatitude();
+        double longitude = mLastLocationReading.getLongitude();
+        Timber.d("Location: %f/%f", latitude, longitude);
+        positionTextView.setText(String.format("%f\n%f", latitude, longitude));
 
         return ;
     }
