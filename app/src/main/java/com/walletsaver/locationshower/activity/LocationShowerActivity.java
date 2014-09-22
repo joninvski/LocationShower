@@ -33,7 +33,8 @@ public class LocationShowerActivity extends FullscreenActivity {
     @InjectView(R.id.dummy_button) Button refreshButton;
     @InjectView(R.id.fullscreen_content) TextView positionTextView;
 
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override 
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Injects required views
@@ -44,15 +45,26 @@ public class LocationShowerActivity extends FullscreenActivity {
             finish();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mLastLocationReading = getLastKnownLocation();
+        showPosition(mLastLocationReading);
+    }
+
+
     @OnClick(R.id.dummy_button)
     protected void refreshPosition(Button button) {
         mLastLocationReading = getLastKnownLocation();
+        showPosition(mLastLocationReading);
+    }
+
+    private void showPosition(Location position)
+    { 
         double latitude = mLastLocationReading.getLatitude();
         double longitude = mLastLocationReading.getLongitude();
         Timber.d("Location: %f/%f", latitude, longitude);
         positionTextView.setText(String.format("%f\n%f", latitude, longitude));
-
-        return ;
     }
 
     private Location getLastKnownLocation() {
