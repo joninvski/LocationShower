@@ -25,6 +25,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 import java.util.List;
 
 import timber.log.Timber;
+import com.walletsaver.locationshower.exception.NoProviderException;
 
 public class LocationShowerActivity extends FullscreenActivity {
 
@@ -37,7 +38,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     @InjectView(R.id.dummy_button) Button refreshButton;
     @InjectView(R.id.fullscreen_content) TextView positionTextView;
 
-    @Override 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -52,46 +53,62 @@ public class LocationShowerActivity extends FullscreenActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mLastLocationReading = getLastKnownLocation();
-        showPosition(mLastLocationReading);
+        try {
+            mLastLocationReading = getLastKnownLocation();
+            showPosition(mLastLocationReading);
+        } catch (NoProviderException e) {
+            alertNoProvider();
+        }
     }
 
 
     @OnClick(R.id.dummy_button)
     protected void refreshPosition(Button button) {
-        mLastLocationReading = getLastKnownLocation();
-        showPosition(mLastLocationReading);
-        final String alertText = String.format(getString(R.string.position_fetched),
-                mLastLocationReading.getProvider());
-        Crouton.makeText(this, alertText, Style.CONFIRM).show();
+        try {
+            mLastLocationReading = getLastKnownLocation();
+            showPosition(mLastLocationReading);
+            final String alertText = String.format(getString(R.string.position_fetched),
+                                                   mLastLocationReading.getProvider());
+            Crouton.makeText(this, alertText, Style.CONFIRM).show();
+        } catch (NoProviderException e) {
+            alertNoProvider();
+        }
     }
 
-    private void showPosition(Location position)
-    { 
+    private void alertNoProvider() {
+        Crouton.makeText(this, "No location provider is enabled", Style.ALERT).show();
+    }
+
+    private void showPosition(Location position) {
         double latitude = mLastLocationReading.getLatitude();
         double longitude = mLastLocationReading.getLongitude();
         Timber.d("Location: %f/%f", latitude, longitude);
         positionTextView.setText(String.format("%f\n%f", latitude, longitude));
     }
 
-    private Location getLastKnownLocation() {
+    private Location getLastKnownLocation() throws NoProviderException {
         List<String> matchingProviders = mLocationManager.getAllProviders();
 
-        for (String provider : matchingProviders) {
-            Location location = mLocationManager.getLastKnownLocation(provider);
+        Location mostAccurate = null;
 
-            if (location != null) {
-                Timber.d(TAG, "The choosen provider was: " + provider);
-                if (age(location) < FIVE_MINS) {
-                    Timber.d("Location is fresh.");
-                    return location;
-                } else { // Location is old, warn user TODO
-                    Timber.d("Location is old.");
-                    return location;
+        for (String provider : matchingProviders) {
+            final Location newLocation = mLocationManager.getLastKnownLocation(provider);
+            Timber.d("Provider: %s", provider);
+
+            if (newLocation != null) {
+                if(mostAccurate == null)
+                    mostAccurate = newLocation;
+                else {
+                    mostAccurate = mostAccurate.getAccuracy() > newLocation.getAccuracy() ?
+                    mostAccurate : newLocation;
                 }
             }
         }
-        return null;
+        if (mostAccurate == null) {
+            throw new NoProviderException("No provider was available");
+        }
+
+        return mostAccurate;
     }
 
     private long age(Location location) {
