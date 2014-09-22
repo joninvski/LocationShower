@@ -19,6 +19,7 @@ import butterknife.OnClick;
 import com.walletsaver.locationshower.R;
 
 import java.util.List;
+import timber.log.Timber;
 
 public class LocationShowerActivity extends FullscreenActivity {
 
@@ -44,7 +45,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     @OnClick(R.id.dummy_button)
     protected void refreshPosition(Button button) {
         mLastLocationReading = getLastKnownLocation();
-        Log.d(TAG, "Location: " + mLastLocationReading.getLatitude() + " / " + mLastLocationReading.getLongitude());
+        Timber.d("Location: " + mLastLocationReading.getLatitude() + " / " + mLastLocationReading.getLongitude());
 
         return ;
     }
@@ -53,20 +54,15 @@ public class LocationShowerActivity extends FullscreenActivity {
         List<String> matchingProviders = mLocationManager.getAllProviders();
 
         for (String provider : matchingProviders) {
-
-            // Note: Uncomment these lines for coursera tests
-            //if (!provider.equals(LocationManager.NETWORK_PROVIDER))
-            //  continue;
-
             Location location = mLocationManager.getLastKnownLocation(provider);
 
             if (location != null) {
-                Log.d(TAG, "The choosen provider was: " + provider);
+                Timber.d(TAG, "The choosen provider was: " + provider);
                 if (age(location) < FIVE_MINS) {
-                    Log.d(TAG, "Location is fresh.");
+                    Timber.d("Location is fresh.");
                     return location;
                 } else { // Location is old, warn user TODO
-                    Log.d(TAG, "Location is old.");
+                    Timber.d("Location is old.");
                     return location;
                 }
             }
