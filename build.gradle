@@ -1,0 +1,42 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+ext {
+    versionMajor = 0
+    versionMinor = 1
+    versionPatch = 0
+
+    versionCode = versionMajor * 1000 + versionMinor * 100 + versionPatch
+    versionName = versionMajor + "." + versionMinor + "." + versionPatch
+
+    minSdkVersion = 11
+    targetSdkVersion = 20
+    compileSdkVersion = 20
+    buildToolsVersion = '20.0.0'
+}
+
+ext.libraries = [
+        android_cq_gradle   : 'com.github.nrudenko:gradle-android-cq-plugin:0.1+',
+        androidtools_gradle : 'com.android.tools.build:gradle:0.13.+',
+        cobertura_gradle    : 'net.saliman:gradle-cobertura-plugin:2.2.2',
+        hugo_gradle         : 'com.jakewharton.hugo:hugo-plugin:1.1.+',
+        sdkmanager_gradle   : 'com.jakewharton.sdkmanager:gradle-plugin:0.10.+',
+        spoon_gradle        : 'com.stanfy.spoon:spoon-gradle-plugin:0.10.+',
+
+        appcompat           : 'com.android.support:appcompat-v7:19.0.+',
+        supportv4           : 'com.android.support:support-v4:19.1.+',
+]

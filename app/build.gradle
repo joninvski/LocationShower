@@ -1,0 +1,43 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath parent.ext.libraries.hugo_gradle
+        classpath parent.ext.libraries.androidtools_gradle
+        classpath parent.ext.libraries.spoon_gradle
+        classpath parent.ext.libraries.sdkmanager_gradle
+        classpath parent.ext.libraries.android_cq_gradle
+    }
+}
+
+apply plugin: 'android-sdk-manager'
+apply plugin: 'com.android.application'
+apply plugin: 'android-cq'
+apply plugin: 'spoon'
+apply plugin: 'hugo'
+
+android {
+    compileSdkVersion parent.ext.targetSdkVersion
+    buildToolsVersion parent.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion parent.ext.minSdkVersion
+        targetSdkVersion parent.ext.targetSdkVersion
+        versionCode parent.ext.versionCode
+        versionName parent.ext.versionName
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+
+    compile parent.ext.libraries.supportv4
+    compile parent.ext.libraries.appcompat
+
+}
