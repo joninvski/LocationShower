@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -18,9 +19,12 @@ import butterknife.OnClick;
 
 import com.walletsaver.locationshower.R;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import java.util.List;
+
 import timber.log.Timber;
-import android.widget.TextView;
 
 public class LocationShowerActivity extends FullscreenActivity {
 
@@ -57,6 +61,9 @@ public class LocationShowerActivity extends FullscreenActivity {
     protected void refreshPosition(Button button) {
         mLastLocationReading = getLastKnownLocation();
         showPosition(mLastLocationReading);
+        final String alertText = String.format(getString(R.string.position_fetched),
+                mLastLocationReading.getProvider());
+        Crouton.makeText(this, alertText, Style.CONFIRM).show();
     }
 
     private void showPosition(Location position)
