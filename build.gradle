@@ -39,4 +39,5 @@ ext.libraries = [
 
         appcompat           : 'com.android.support:appcompat-v7:19.0.+',
         supportv4           : 'com.android.support:support-v4:19.1.+',
+        butterknife         : 'com.jakewharton:butterknife:5.0.+',
 ]
