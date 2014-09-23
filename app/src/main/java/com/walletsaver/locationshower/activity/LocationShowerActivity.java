@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +41,7 @@ public class LocationShowerActivity extends FullscreenActivity {
 
     private OneTimeLocationListener mLocationListener;
 
-    @InjectView(R.id.dummy_button) Button refreshButton;
+    @InjectView(R.id.dummy_button) ImageButton refreshButton;
     @InjectView(R.id.fullscreen_content) TextView positionTextView;
 
     @Override
@@ -82,7 +82,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     }
 
     @OnClick(R.id.dummy_button)
-    protected void refreshLocation(Button button) {
+    protected void refreshLocation(ImageButton button) {
         Timber.d("Clicked refresh location button");
         mLocationListener.register(mMinTime, mMinDistance);
         Toast.makeText(this, "Searching for location", Toast.LENGTH_SHORT).show();

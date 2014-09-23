@@ -42,13 +42,26 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent" >
 
-            <Button
-                android:id="@+id/dummy_button"
+            <ImageButton android:id="@+id/dummy_button" 
                 style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/dummy_button" />
+                android:src="@drawable/ic_action_refresh"/>
+
+            <ImageButton android:id="@+id/wifi_button" 
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_network_wifi"/>
+
+            <ImageButton android:id="@+id/network_button" 
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_location_searching"/>
         </LinearLayout>
     </FrameLayout>
 
