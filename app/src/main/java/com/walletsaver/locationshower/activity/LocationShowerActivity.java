@@ -18,6 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+import com.squareup.otto.Bus;
 import com.walletsaver.locationshower.exception.NoProviderException;
 import com.walletsaver.locationshower.R;
 
@@ -27,13 +28,18 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 import java.util.List;
 
 import timber.log.Timber;
+import com.walletsaver.locationshower.LocationShowerApp;
+import com.squareup.otto.Subscribe;
+import com.squareup.otto.Produce;
+import android.widget.Toast;
 
 public class LocationShowerActivity extends FullscreenActivity implements LocationListener {
 
-    private static final long FIVE_MINS = 5 * 60 * 1000;        // Five minutes in milliseconds
+    private static final long ONE_MIN = 60 * 1000;            // One minutes in milliseconds
+    private static final long FIVE_MINS = 5 * ONE_MIN;        // Five minutes in milliseconds
 
-    private long mMinTime = 5000;                               // default minimum time between new readings
-    private float mMinDistance = 1000.0f;                       // default minimum distance between old and new readings.
+    private long mMinTime = 5000;                             // default minimum time between new readings
+    private float mMinDistance = 1000.0f;                     // default minimum distance between old and new readings.
 
     private LocationManager mLocationManager;
     private Location mLastLocationReading;
@@ -51,91 +57,122 @@ public class LocationShowerActivity extends FullscreenActivity implements Locati
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager == null) /* TODO Handle this error */
             finish();
+
+    }
+
+    private Bus getBus() {
+        return ((LocationShowerApp) getApplication()).getBus();
     }
 
 
-    @Override 
+    @Override
     public void onLocationChanged(Location currentLocation) {
- 
-        Timber.d("MINE", "Location is now %s", currentLocation.toString());
+        Timber.d("Location is now %s", currentLocation.toString());
 
-        // 1) If there is no last location, keep the current location. 
+        // 1) If there is no last location, keep the current location.
         if (mLastLocationReading == null) {
             mLastLocationReading = currentLocation;
-        } 
- 
- 
-        // 2) If the current location is older than the last location, ignore the current location 
+        }
+
+        // 2) If the current location is older than the last location, ignore the current location
         else if (currentLocation.getTime() < mLastLocationReading.getTime())
-            return; 
- 
- 
-        // 3) If the current location is newer than the last locations, keep the current location. 
-        else { 
+            return;
+
+
+        // 3) If the current location is newer than the last locations, keep the current location.
+        else {
             mLastLocationReading = currentLocation;
-        } 
-    } 
- 
- 
-    @Override 
+        }
+
+        getBus().post(mLastLocationReading);
+
+        mLocationManager.removeUpdates(this);
+    }
+
+    @Produce
+    public Location publishNewLocationAvailable() {
+        Timber.d("Publishing new location to bus %s", mLastLocationReading);
+        if(mLastLocationReading != null)
+            return new Location(mLastLocationReading);
+        return null;
+    }
+
+
+
+    @Override
     public void onProviderDisabled(String provider) {
-        // not implemented 
-    } 
- 
- 
-    @Override 
+        // not implemented
+    }
+
+
+    @Override
     public void onProviderEnabled(String provider) {
-        // not implemented 
-    } 
- 
- 
-    @Override 
+        // not implemented
+    }
+
+
+    @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        // not implemented 
-    } 
+        // not implemented
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, mMinTime, mMinDistance, this);
+        getBus().register(this);
+
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, mMinTime, mMinDistance, this);
         try {
             mLastLocationReading = getLastKnownLocation();
-
             showPosition(mLastLocationReading);
         } catch (NoProviderException e) {
             alertNoProvider();
         }
     }
 
-    @Override 
-    protected void onPause() { 
+    @Override
+    protected void onPause() {
         mLocationManager.removeUpdates(this);
-        super.onPause(); 
-    } 
-
+        getBus().unregister(this);
+        super.onPause();
+    }
 
     @OnClick(R.id.dummy_button)
-    protected void refreshPosition(Button button) {
-        try {
-            mLastLocationReading = getLastKnownLocation();
-            showPosition(mLastLocationReading);
-            final String alertText = String.format(getString(R.string.position_fetched),
-                                                   mLastLocationReading.getProvider());
-            Crouton.makeText(this, alertText, Style.CONFIRM).show();
-        } catch (NoProviderException e) {
-            alertNoProvider();
-        }
+    protected void refreshLocation(Button button) {
+        Timber.d("Clicked refresh location button");
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, mMinTime, mMinDistance, this);
+        Toast.makeText(this, "Searching for location", Toast.LENGTH_SHORT).show();
+        positionTextView.setText("Updating...");
     }
 
     private void alertNoProvider() {
-        Crouton.makeText(this, "No location provider is enabled", Style.ALERT).show();
+        Toast.makeText(this, "No location provider is enabled", Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void newLocationAvailable(Location location) {
+        Timber.i("New location available %f/%f", location.getLatitude(), location.getLongitude());
+        // TODO: React to the event somehow!
+        showPosition(location);
     }
 
     private void showPosition(Location position) {
         double latitude = mLastLocationReading.getLatitude();
         double longitude = mLastLocationReading.getLongitude();
         Timber.d("Location: %f/%f", latitude, longitude);
-        positionTextView.setText(String.format("%f\n%f", latitude, longitude));
+        String howOld;
+        if(age(position) > FIVE_MINS)
+            howOld = "Very old";
+        else if(age(position) > ONE_MIN)
+            howOld = "Old";
+        else
+            howOld = "Recent";
+
+        positionTextView.setText(String.format("%f\n%f\n\n%s\n\n%s", latitude, longitude, howOld, position.getProvider()));
+
+        final String alertText = String.format(getString(R.string.position_fetched),
+                                               mLastLocationReading.getProvider());
+        Toast.makeText(this, alertText, Toast.LENGTH_SHORT).show();
     }
 
     private Location getLastKnownLocation() throws NoProviderException {

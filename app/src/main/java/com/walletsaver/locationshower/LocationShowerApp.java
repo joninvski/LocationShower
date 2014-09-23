@@ -3,6 +3,8 @@ package com.walletsaver.locationshower;
 import android.app.Application;
 import android.content.Context;
 
+import com.squareup.otto.Bus;
+
 import static timber.log.Timber.DebugTree;
 
 import timber.log.Timber;
@@ -14,7 +16,8 @@ import timber.log.Timber;
  * debugtree for all the app
  */
 public class LocationShowerApp extends Application {
-    // The publish subscribe bus
+
+    private static Bus mBus; // The publish subscribe bus
 
     /**
      * Build object graph on creation so that objects are available
@@ -25,6 +28,10 @@ public class LocationShowerApp extends Application {
 
         // Timber is a better lop option.
         Timber.plant( new DebugTree() );
+        mBus = new Bus();
+    }
 
+    public Bus getBus() {
+        return mBus;
     }
 }
