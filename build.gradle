@@ -33,7 +33,6 @@ ext.libraries = [
         android_cq_gradle   : 'com.github.nrudenko:gradle-android-cq-plugin:0.1+',
         androidtools_gradle : 'com.android.tools.build:gradle:0.13.+',
         cobertura_gradle    : 'net.saliman:gradle-cobertura-plugin:2.2.2',
-        hugo_gradle         : 'com.jakewharton.hugo:hugo-plugin:1.1.+',
         sdkmanager_gradle   : 'com.jakewharton.sdkmanager:gradle-plugin:0.10.+',
         spoon_gradle        : 'com.stanfy.spoon:spoon-gradle-plugin:0.10.+',
 
