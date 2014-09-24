@@ -42,4 +42,6 @@ dependencies {
     compile parent.ext.libraries.crouton
     compile parent.ext.libraries.otto
 
+    androidTestCompile parent.ext.libraries.spoonclient
+    androidTestCompile parent.ext.libraries.robotium
 }
