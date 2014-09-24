@@ -30,28 +30,15 @@ Activity tests
 Code quality
 ------------
 
-(TODO)
-
     # Runs lint on all variants
     ./gradlew lint         # results in app/build/lint-results.html
 
-    # Checks if the code is accordings with the code style                              # TODO
+    # Checks if the code is accordings with the code style
     ./gradlew app:checktyle   # results in app/build/reports/checkstyle/main.xml
 
-Unit tests
-----------
-
-(TODO)
-
-    # Run the unit tests of the domain subproject
-    ./gradlew :domain:test           # Check the results in _domain/build/reports/tests/index.html_
 
 Libraries Used
 --------------
-
-### Building 
-
-- Checkstyle
 
 ### Running
 
@@ -59,3 +46,10 @@ Libraries Used
 - Jake Wharton's [Butterknife](http://jakewharton.github.io/butterknife/)
 - Jake Wharton's [Timber](https://github.com/JakeWharton/timber)
 - keyboardsurfer's [Crouton](https://github.com/keyboardsurfer/Crouton)
+
+### Testing/Quality
+
+- [Checkstyle](http://checkstyle.sourceforge.net/)
+- [Robotium](https://code.google.com/p/robotium)
+- Square's [Spoon](http://square.github.io/spoon/)
+
