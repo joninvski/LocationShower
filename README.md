@@ -21,13 +21,11 @@ Install on device
 Activity tests
 --------------
 
-(TODO)
-
     # Installs and runs the tests for Build 'debug' on connected devices.
-    ./gradlew connectedAndroidTest
+    ./gradlew connectedAndroidTest # results in app/build/outputs/reports/androidTests/connected/index.html
 
-    # Runs all the instrumentation test variations on all the connected devices (TODO )
-    ./gradlew spoon        # results in app/build/spoon/debug/index.html
+    # Runs all the instrumentation test variations on all the connected devices
+    ./gradlew spoon                # results in app/build/spoon/debug/index.html
 
 Code quality
 ------------
