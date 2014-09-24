@@ -24,14 +24,17 @@ import com.squareup.otto.Subscribe;
 import com.walletsaver.locationshower.exception.NoProviderException;
 import com.walletsaver.locationshower.LocationShowerApp;
 import com.walletsaver.locationshower.R;
-import com.walletsaver.locationshower.util.OneTimeLocationListener;
 import com.walletsaver.locationshower.task.GetAddressTask;
+import com.walletsaver.locationshower.util.OneTimeLocationListener;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
+import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
+
 
 import timber.log.Timber;
 
@@ -182,7 +185,9 @@ public class LocationShowerActivity extends FullscreenActivity {
         else
             howOld = "Recent";
 
-        String text = String.format("%f\n%f\n\n%s\n\n%s", latitude, longitude, howOld, location.getProvider());
+        Formatter formatter = new Formatter(Locale.US);
+        String text = formatter.format("%f\n%f\n\n%s\n\n%s",
+                latitude, longitude, howOld, location.getProvider()).toString();
         positionTextView.setText(text);
 
         if(mTemporaryLocationCrouton != null) {

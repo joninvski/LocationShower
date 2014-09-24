@@ -3,6 +3,5 @@
 
     <string name="app_name">LocationShower</string>
     <string name="dummy_content">The location should be placed here</string>
-    <string name="position_fetched">Position updated from %s provider</string>
 
 </resources>

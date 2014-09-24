@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.walletsaver.locationshower"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    package="com.walletsaver.locationshower" >
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"   /> <!-- GPS               -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- cellular and wifi -->
-
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"

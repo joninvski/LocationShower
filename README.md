@@ -1,5 +1,5 @@
 LocationShower
-========
+==============
 
 Shows your location (duh!)
 
