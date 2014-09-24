@@ -27,6 +27,12 @@ public class OneTimeLocationListener implements  LocationListener {
         mIsRegistred = false;
     }
 
+    public static OneTimeLocationListener createLocationListener(Context context, Bus bus, boolean isProviderGps) {
+        if(isProviderGps)
+            return createLocationListenerGps(context, bus);
+        else
+            return createLocationListenerNetwork(context, bus);
+    }
 
     public static OneTimeLocationListener createLocationListenerGps(Context context, Bus bus) {
         return new OneTimeLocationListener(LocationManager.GPS_PROVIDER, context, bus);
@@ -36,7 +42,10 @@ public class OneTimeLocationListener implements  LocationListener {
         return new OneTimeLocationListener(LocationManager.NETWORK_PROVIDER, context, bus);
     }
 
-    public void register(long mMinTime, float mMinDistance) {
+    public void register() {
+        final long mMinTime = 0;                // default minimum time between new readings
+        final float mMinDistance = 0.0f;        // default minimum distance between old and new readings.
+
         if(!mIsRegistred) {
             mBus.register(this);
             mLocationManager.requestLocationUpdates(mLocationSource, mMinTime, mMinDistance, this);
