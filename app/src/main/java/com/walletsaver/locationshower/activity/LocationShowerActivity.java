@@ -33,9 +33,8 @@ import timber.log.Timber;
 public class LocationShowerActivity extends FullscreenActivity {
 
     private static final Style INFINITE = new Style.Builder().setBackgroundColorValue(R.color.yellow_crouton).build();
-    private static final Configuration CONFIGURATION_INFINITE = new Configuration.Builder()
-    .setDuration(Configuration.DURATION_INFINITE)
-    .build();
+    private static final Configuration CONFIGURATION_INFINITE =
+        new Configuration.Builder().setDuration(Configuration.DURATION_INFINITE) .build();
 
     private static final long ONE_MIN = 60 * 1000;            // One minutes in milliseconds
     private static final long FIVE_MINS = 5 * ONE_MIN;        // Five minutes in milliseconds
@@ -183,7 +182,7 @@ public class LocationShowerActivity extends FullscreenActivity {
         positionTextView.setText(text);
 
         if (mTemporaryLocationCrouton != null) {
-            Timber.d("Hiding old croutong2");
+            Timber.d("Hiding old croutons");
             Crouton.hide(mTemporaryLocationCrouton);
             Crouton.clearCroutonsForActivity(this);
         }
