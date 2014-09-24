@@ -1,7 +1,9 @@
 package com.walletsaver.locationshower.activity;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,10 +25,11 @@ import com.walletsaver.locationshower.exception.NoProviderException;
 import com.walletsaver.locationshower.LocationShowerApp;
 import com.walletsaver.locationshower.R;
 import com.walletsaver.locationshower.util.OneTimeLocationListener;
+import com.walletsaver.locationshower.task.GetAddressTask;
 
+import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
-import de.keyboardsurfer.android.widget.crouton.Configuration;
 
 import java.util.List;
 
@@ -48,8 +51,9 @@ public class LocationShowerActivity extends FullscreenActivity {
     private boolean mIsProviderGps;
 
     @InjectView(R.id.dummy_button) ImageButton refreshButton;
-    @InjectView(R.id.fullscreen_content) TextView positionTextView;
     @InjectView(R.id.location_provider_button) ImageButton locationProviderButton;
+    @InjectView(R.id.about_address_button) ImageButton addressButton;
+    @InjectView(R.id.fullscreen_content) TextView positionTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,36 @@ public class LocationShowerActivity extends FullscreenActivity {
             alertNoProvider();
         }
         mLocationListener.register();
+    }
+
+    @OnClick(R.id.about_address_button)
+    protected void aboutAddress(ImageButton button) {
+        // Ensure that a Geocoder services is available
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                Geocoder.isPresent()) {
+
+            /*
+             * Reverse geocoding is long-running and synchronous.
+             * Run it on a background thread.
+             * Pass the current location to the background task.
+             * When the task finishes,
+             * onPostExecute() displays the address.
+             */
+            try{
+                final Location currentLocation =  mLocationListener.getLastKnownLocation();
+                GetAddressTask task = new GetAddressTask(this, getBus());
+                task.execute(currentLocation);
+            }
+            catch(NoProviderException e) {
+                //TODO
+            }
+        }
+    }
+
+    @Subscribe
+    public void newAddressAvailable(String address) {
+        Timber.i("New address available %s", address);
+        Crouton.makeText(this, address, Style.INFO).show();
     }
 
     @OnClick(R.id.location_provider_button)
