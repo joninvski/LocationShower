@@ -115,7 +115,11 @@ public class FullscreenActivity extends Activity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(
+        findViewById(R.id.refresh_button).setOnTouchListener(
+            mDelayHideTouchListener);
+        findViewById(R.id.about_address_button).setOnTouchListener(
+            mDelayHideTouchListener);
+        findViewById(R.id.location_provider_button).setOnTouchListener(
             mDelayHideTouchListener);
     }
 

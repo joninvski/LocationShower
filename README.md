@@ -37,11 +37,8 @@ Code quality
     # Runs lint on all variants
     ./gradlew lint         # results in app/build/lint-results.html
 
-    # Run tests and generate Cobertura coverage reports
-    ./gradlew cobertura    # results in domain/build/reports/cobertura/index.html
-
     # Checks if the code is accordings with the code style                              # TODO
-    ./gradlew domain:check app:checktyle   # results in domain/build/reports/checkstyle/main.xml
+    ./gradlew app:checktyle   # results in app/build/reports/checkstyle/main.xml
 
 Unit tests
 ----------
@@ -53,6 +50,12 @@ Unit tests
 
 Libraries Used
 --------------
+
+### Building 
+
+- Checkstyle
+
+### Running
 
 - Square's [Otto](http://square.github.io/otto/)
 - Jake Wharton's [Butterknife](http://jakewharton.github.io/butterknife/)

@@ -11,13 +11,8 @@ import java.util.List;
 import com.walletsaver.locationshower.exception.NoProviderException;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
-import android.location.Geocoder;
-import android.os.AsyncTask;
-import android.location.Address;
-import java.io.IOException;
-import java.util.Locale;
 
-public class OneTimeLocationListener implements  LocationListener {
+public final class OneTimeLocationListener implements  LocationListener {
 
     private Location mLastLocationReading;
     private final LocationManager mLocationManager;
@@ -33,10 +28,11 @@ public class OneTimeLocationListener implements  LocationListener {
     }
 
     public static OneTimeLocationListener createLocationListener(Context context, Bus bus, boolean isProviderGps) {
-        if(isProviderGps)
+        if (isProviderGps) {
             return createLocationListenerGps(context, bus);
-        else
+        } else {
             return createLocationListenerNetwork(context, bus);
+        }
     }
 
     public static OneTimeLocationListener createLocationListenerGps(Context context, Bus bus) {
@@ -51,7 +47,7 @@ public class OneTimeLocationListener implements  LocationListener {
         final long mMinTime = 0;                // default minimum time between new readings
         final float mMinDistance = 0.0f;        // default minimum distance between old and new readings.
 
-        if(!mIsRegistred) {
+        if (!mIsRegistred) {
             mBus.register(this);
             mLocationManager.requestLocationUpdates(mLocationSource, mMinTime, mMinDistance, this);
             mIsRegistred = true;
@@ -59,7 +55,7 @@ public class OneTimeLocationListener implements  LocationListener {
     }
 
     public void unregister() {
-        if(mIsRegistred) {
+        if (mIsRegistred) {
             mBus.unregister(this);
             mLocationManager.removeUpdates(this);
             mIsRegistred = false;
@@ -70,19 +66,14 @@ public class OneTimeLocationListener implements  LocationListener {
     public void onLocationChanged(Location currentLocation) {
         Timber.d("Location changed to %s", currentLocation.toString());
 
-        // 1) If there is no last location, keep the current location.
-        if (mLastLocationReading == null) {
-            mLastLocationReading = currentLocation;
-        }
+        // there is no last location, keep the current location.
+        if (mLastLocationReading == null) { mLastLocationReading = currentLocation; }
 
-        // 2) If the current location is older than the last location, ignore the current location
-        else if (currentLocation.getTime() < mLastLocationReading.getTime())
-            return;
+        // the current location is older than the last location, ignore the current location
+        else if (currentLocation.getTime() < mLastLocationReading.getTime()) { return; }
 
-        // 3) If the current location is newer than the last locations, keep the current location.
-        else {
-            mLastLocationReading = currentLocation;
-        }
+        // the current location is newer than the last locations, keep the current location.
+        else { mLastLocationReading = currentLocation; }
 
         mBus.post(mLastLocationReading);
 
@@ -92,8 +83,9 @@ public class OneTimeLocationListener implements  LocationListener {
     @Produce
     public Location publishNewLocationAvailable() {
         Timber.d("Publishing new location to bus %s", mLastLocationReading);
-        if(mLastLocationReading != null)
+        if (mLastLocationReading != null) {
             return new Location(mLastLocationReading);
+        }
         return null;
     }
 
@@ -123,11 +115,11 @@ public class OneTimeLocationListener implements  LocationListener {
             final Location newLocation = mLocationManager.getLastKnownLocation(provider);
 
             if (newLocation != null) {
-                if(mostAccurate == null)
+                if (mostAccurate == null) {
                     mostAccurate = newLocation;
-                else {
-                    mostAccurate = mostAccurate.getAccuracy() > newLocation.getAccuracy() ?
-                    mostAccurate : newLocation;
+                } else {
+                    mostAccurate = mostAccurate.getAccuracy() > newLocation.getAccuracy()
+                        ?  mostAccurate : newLocation;
                 }
             }
         }

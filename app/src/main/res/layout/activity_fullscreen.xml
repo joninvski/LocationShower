@@ -42,7 +42,7 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent" >
 
-            <ImageButton android:id="@+id/dummy_button"
+            <ImageButton android:id="@+id/refresh_button"
                 style="?metaButtonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

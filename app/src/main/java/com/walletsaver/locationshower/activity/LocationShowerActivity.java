@@ -1,16 +1,9 @@
 package com.walletsaver.locationshower.activity;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Context;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +25,6 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 import java.util.Formatter;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -53,7 +45,7 @@ public class LocationShowerActivity extends FullscreenActivity {
 
     private boolean mIsProviderGps;
 
-    @InjectView(R.id.dummy_button) ImageButton refreshButton;
+    @InjectView(R.id.refresh_button) ImageButton refreshButton;
     @InjectView(R.id.location_provider_button) ImageButton locationProviderButton;
     @InjectView(R.id.about_address_button) ImageButton addressButton;
     @InjectView(R.id.fullscreen_content) TextView positionTextView;
@@ -94,14 +86,14 @@ public class LocationShowerActivity extends FullscreenActivity {
         super.onPause();
     }
 
-    @OnClick(R.id.dummy_button)
+    @OnClick(R.id.refresh_button)
     protected void refreshLocation(ImageButton button) {
         Timber.d("Clicked refresh location button");
         positionTextView.setText("Updating...");
         try {
             Location lastLocationReading = mLocationListener.getLastKnownLocation();
             boolean temporaryLocation = true;
-            showLocation(lastLocationReading, true );
+            showLocation(lastLocationReading, true);
         } catch (NoProviderException e) {
             Timber.e("%s", e);
             alertNoProvider();
@@ -112,8 +104,8 @@ public class LocationShowerActivity extends FullscreenActivity {
     @OnClick(R.id.about_address_button)
     protected void aboutAddress(ImageButton button) {
         // Ensure that a Geocoder services is available
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                Geocoder.isPresent()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
+                && Geocoder.isPresent()) {
 
             /*
              * Reverse geocoding is long-running and synchronous.
@@ -122,13 +114,12 @@ public class LocationShowerActivity extends FullscreenActivity {
              * When the task finishes,
              * onPostExecute() displays the address.
              */
-            try{
+            try {
                 final Location currentLocation =  mLocationListener.getLastKnownLocation();
                 GetAddressTask task = new GetAddressTask(this, getBus());
                 task.execute(currentLocation);
-            }
-            catch(NoProviderException e) {
-                //TODO
+            } catch (NoProviderException e) {
+                // TODO
             }
         }
     }
@@ -143,7 +134,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     protected void changeLocationProvider(ImageButton button) {
         Timber.d("Clicked change location provider");
 
-        if(mIsProviderGps) {
+        if (mIsProviderGps) {
             button.setImageResource(R.drawable.ic_action_network_wifi);
             Toast.makeText(this, "Now using network", Toast.LENGTH_SHORT).show();
         } else {
@@ -178,25 +169,26 @@ public class LocationShowerActivity extends FullscreenActivity {
         double longitude = location.getLongitude();
         Timber.d("Location: %f/%f", latitude, longitude);
         String howOld;
-        if(OneTimeLocationListener.age(location) > FIVE_MINS)
+        if (OneTimeLocationListener.age(location) > FIVE_MINS) {
             howOld = "Very old";
-        else if(OneTimeLocationListener.age(location) > ONE_MIN)
+        } else if (OneTimeLocationListener.age(location) > ONE_MIN) {
             howOld = "Old";
-        else
+        } else {
             howOld = "Recent";
+        }
 
         Formatter formatter = new Formatter(Locale.US);
         String text = formatter.format("%f\n%f\n\n%s\n\n%s",
-                latitude, longitude, howOld, location.getProvider()).toString();
+                                       latitude, longitude, howOld, location.getProvider()).toString();
         positionTextView.setText(text);
 
-        if(mTemporaryLocationCrouton != null) {
+        if (mTemporaryLocationCrouton != null) {
             Timber.d("Hiding old croutong2");
             Crouton.hide(mTemporaryLocationCrouton);
             Crouton.clearCroutonsForActivity(this);
         }
 
-        if(temporaryLocation) {
+        if (temporaryLocation) {
             mTemporaryLocationCrouton = Crouton.makeText(this, "Temporary Location", INFINITE);
             mTemporaryLocationCrouton.setConfiguration(CONFIGURATION_INFINITE);
             mTemporaryLocationCrouton.show();

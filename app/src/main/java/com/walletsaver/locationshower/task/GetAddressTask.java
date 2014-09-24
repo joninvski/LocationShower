@@ -14,6 +14,7 @@ import android.location.Geocoder;
 /**
 * A subclass of AsyncTask that calls getFromLocation() in the
 * background. The class definition has these generic types:
+*
 * Location - A Location object containing
 * the current location.
 * Void     - indicates that progress units are not used
@@ -31,7 +32,7 @@ public class GetAddressTask extends AsyncTask<Location, Void, String> {
     }
 
     /**
-     * Get a Geocoder instance, get the latitude and longitude
+     * Get a Geocoder instance, get the latitude and longitude.
      * look up the address, and return it
      *
      * @params params One or more Location objects
@@ -47,19 +48,16 @@ public class GetAddressTask extends AsyncTask<Location, Void, String> {
         // Create a list to contain the result address
         List<Address> addresses = null;
         try {
-            int number_addresses = 1;
-            addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+            int numberAddresses = 1;
+            addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), numberAddresses);
         } catch (IOException e1) {
             Timber.e("IO Exception in getFromLocation()");
             e1.printStackTrace();
             return ("IO Exception trying to get address");
         } catch (IllegalArgumentException e2) {
             // Error message to post in the log
-            String errorString = "Illegal arguments " +
-                                 Double.toString(loc.getLatitude()) +
-                                 " , " +
-                                 Double.toString(loc.getLongitude()) +
-                                 " passed to address service";
+            String errorString = "Illegal arguments " + Double.toString(loc.getLatitude())
+                + " , " + Double.toString(loc.getLongitude()) + " passed to address service";
             Timber.e(errorString);
             e2.printStackTrace();
             return errorString;
@@ -75,8 +73,8 @@ public class GetAddressTask extends AsyncTask<Location, Void, String> {
             String addressText = String.format(
                                      "%s, %s, %s",
                                      // If there's a street address, add it
-                                     address.getMaxAddressLineIndex() > 0 ?
-                                     address.getAddressLine(0) : "",
+                                     address.getMaxAddressLineIndex() > 0
+                                     ? address.getAddressLine(0) : "",
                                      // Locality is usually a city
                                      address.getLocality(),
                                      // The country of the address
