@@ -89,7 +89,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     @OnClick(R.id.refresh_button)
     protected void refreshLocation(ImageButton button) {
         Timber.d("Clicked refresh location button");
-        positionTextView.setText("Updating...");
+        positionTextView.setText(getString(R.string.update));
         try {
             Location lastLocationReading = mLocationListener.getLastKnownLocation();
             boolean temporaryLocation = true;
@@ -136,10 +136,10 @@ public class LocationShowerActivity extends FullscreenActivity {
 
         if (mIsProviderGps) {
             button.setImageResource(R.drawable.ic_action_network_wifi);
-            Toast.makeText(this, "Now using network", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.using_network), Toast.LENGTH_SHORT).show();
         } else {
             button.setImageResource(R.drawable.ic_action_location_searching);
-            Toast.makeText(this, "Now using gps", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.using_gps), Toast.LENGTH_SHORT).show();
         }
 
         mIsProviderGps = !mIsProviderGps;
@@ -148,8 +148,8 @@ public class LocationShowerActivity extends FullscreenActivity {
     }
 
     private void alertNoProvider() {
-        Toast.makeText(this, "No location provider is enabled", Toast.LENGTH_SHORT).show();
-        positionTextView.setText("...");
+        Toast.makeText(this, getString(R.string.no_provider), Toast.LENGTH_SHORT).show();
+        positionTextView.setText(getString(R.string.no_position));
     }
 
     @Subscribe
@@ -170,11 +170,11 @@ public class LocationShowerActivity extends FullscreenActivity {
         Timber.d("Location: %f/%f", latitude, longitude);
         String howOld;
         if (OneTimeLocationListener.age(location) > FIVE_MINS) {
-            howOld = "Very old";
+            howOld = getString(R.string.very_old);
         } else if (OneTimeLocationListener.age(location) > ONE_MIN) {
-            howOld = "Old";
+            howOld = getString(R.string.old);
         } else {
-            howOld = "Recent";
+            howOld = getString(R.string.recent);
         }
 
         Formatter formatter = new Formatter(Locale.US);
@@ -189,7 +189,7 @@ public class LocationShowerActivity extends FullscreenActivity {
         }
 
         if (temporaryLocation) {
-            mTemporaryLocationCrouton = Crouton.makeText(this, "Temporary Location", INFINITE);
+            mTemporaryLocationCrouton = Crouton.makeText(this, getString(R.string.temporary_location), INFINITE);
             mTemporaryLocationCrouton.setConfiguration(CONFIGURATION_INFINITE);
             mTemporaryLocationCrouton.show();
         }

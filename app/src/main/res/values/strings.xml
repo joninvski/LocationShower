@@ -3,5 +3,14 @@
 
     <string name="app_name">LocationShower</string>
     <string name="dummy_content">The location should be placed here</string>
+    <string name="update">Updating...</string>
+    <string name="using_network">Using network</string>
+    <string name="using_gps">Using GPS</string>
+    <string name="no_position">...</string>
+    <string name="no_provider">No location provider is enabled</string>
+    <string name="old">Old</string>
+    <string name="very_old">Very old</string>
+    <string name="recent">Recent</string>
+    <string name="temporary_location"></string>
 
 </resources>
