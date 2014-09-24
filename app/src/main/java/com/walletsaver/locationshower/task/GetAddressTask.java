@@ -95,8 +95,11 @@ public class GetAddressTask extends AsyncTask<Location, Void, String> {
     @Override
     protected void onPostExecute(String address) {
         Timber.i("Address is %s", address);
-        // Publish the results of the lookup.
+
+        // Publish the results of the lookup the otto bus
         mBus.post(address);
+
+        // This task has done its job. No longer required to be registered
         mBus.unregister(this);
     }
 }

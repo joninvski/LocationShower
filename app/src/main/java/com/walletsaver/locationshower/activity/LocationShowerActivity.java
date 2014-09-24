@@ -32,36 +32,34 @@ import timber.log.Timber;
 
 public class LocationShowerActivity extends FullscreenActivity {
 
+    // Style for a crouton popup
     private static final Style INFINITE = new Style.Builder().setBackgroundColorValue(R.color.yellow_crouton).build();
     private static final Configuration CONFIGURATION_INFINITE =
         new Configuration.Builder().setDuration(Configuration.DURATION_INFINITE) .build();
 
-    private static final long ONE_MIN = 60 * 1000;            // One minutes in milliseconds
-    private static final long FIVE_MINS = 5 * ONE_MIN;        // Five minutes in milliseconds
+    // Constants to check time
+    private static final long ONE_MIN = 60 * 1000;          // One minutes in milliseconds
+    private static final long FIVE_MINS = 5 * ONE_MIN;      // Five minutes in milliseconds
 
-    private OneTimeLocationListener mLocationListener;
-    private Crouton mTemporaryLocationCrouton;
+    private OneTimeLocationListener mLocationListener;      // Listener that discovers the location
+    private Crouton mTemporaryLocationCrouton;              // Reference for the crouton popup
 
-    private boolean mIsProviderGps;
+    private boolean mIsProviderGps;                         // Indicates if using GPS (true) or network (false)
 
-    @InjectView(R.id.refresh_button) ImageButton refreshButton;
-    @InjectView(R.id.location_provider_button) ImageButton locationProviderButton;
-    @InjectView(R.id.about_address_button) ImageButton addressButton;
+    // Views injected by butterknife
     @InjectView(R.id.fullscreen_content) TextView positionTextView;
 
+    // -----------------   Activity lifecycle methods
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Injects required views
         ButterKnife.inject(this);
-        mIsProviderGps = false;
+
+        mIsProviderGps = false;                 //Starts on network provider
         mTemporaryLocationCrouton = null;
         mLocationListener = OneTimeLocationListener.createLocationListener(this, getBus(), mIsProviderGps);
-    }
-
-    private Bus getBus() {
-        return ((LocationShowerApp) getApplication()).getBus();
     }
 
     @Override
@@ -85,6 +83,7 @@ public class LocationShowerActivity extends FullscreenActivity {
         super.onPause();
     }
 
+    // -----------------   Buttons onClick callbacks
     @OnClick(R.id.refresh_button)
     protected void refreshLocation(ImageButton button) {
         Timber.d("Clicked refresh location button");
@@ -102,6 +101,8 @@ public class LocationShowerActivity extends FullscreenActivity {
 
     @OnClick(R.id.about_address_button)
     protected void aboutAddress(ImageButton button) {
+        Timber.e("Clicked About Address button");
+
         // Ensure that a Geocoder services is available
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                 && Geocoder.isPresent()) {
@@ -118,15 +119,9 @@ public class LocationShowerActivity extends FullscreenActivity {
                 GetAddressTask task = new GetAddressTask(this, getBus());
                 task.execute(currentLocation);
             } catch (NoProviderException e) {
-                // TODO
+                alertNoProvider();
             }
         }
-    }
-
-    @Subscribe
-    public void newAddressAvailable(String address) {
-        Timber.i("New address available %s", address);
-        Crouton.makeText(this, address, Style.INFO).show();
     }
 
     @OnClick(R.id.location_provider_button)
@@ -146,10 +141,14 @@ public class LocationShowerActivity extends FullscreenActivity {
         mLocationListener = OneTimeLocationListener.createLocationListener(this, getBus(), mIsProviderGps);
     }
 
-    private void alertNoProvider() {
-        Toast.makeText(this, getString(R.string.no_provider), Toast.LENGTH_SHORT).show();
-        positionTextView.setText(getString(R.string.no_position));
+
+    // ----------------- Otto bus consumers
+    @Subscribe
+    public void newAddressAvailable(String address) {
+        Timber.i("New address available %s", address);
+        Crouton.makeText(this, address, Style.INFO).show();
     }
+
 
     @Subscribe
     public void newLocationAvailable(Location location) {
@@ -158,6 +157,7 @@ public class LocationShowerActivity extends FullscreenActivity {
         mTemporaryLocationCrouton = null;
     }
 
+    // ----------------- Ui changers
     private void showLocation(Location location) {
         boolean temporaryLocation = false;
         showLocation(location, temporaryLocation);
@@ -166,7 +166,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     private void showLocation(Location location, boolean temporaryLocation) {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
-        Timber.d("Location: %f/%f", latitude, longitude);
+
         String howOld;
         if (OneTimeLocationListener.age(location) > FIVE_MINS) {
             howOld = getString(R.string.very_old);
@@ -193,4 +193,17 @@ public class LocationShowerActivity extends FullscreenActivity {
             mTemporaryLocationCrouton.show();
         }
     }
+
+    private void alertNoProvider() {
+        Toast.makeText(this, getString(R.string.no_provider), Toast.LENGTH_SHORT).show();
+        positionTextView.setText(getString(R.string.no_position));
+    }
+
+
+    // ----------------- Util methods
+    private Bus getBus() {
+        return ((LocationShowerApp) getApplication()).getBus();
+    }
+
+
 }
