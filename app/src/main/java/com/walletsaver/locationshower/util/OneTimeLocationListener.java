@@ -6,11 +6,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
-import timber.log.Timber;
-import java.util.List;
-import com.walletsaver.locationshower.exception.NoProviderException;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
+import com.walletsaver.locationshower.exception.NoProviderException;
+
+import java.lang.IllegalArgumentException;
+import java.util.List;
+
+import timber.log.Timber;
 
 public final class OneTimeLocationListener implements  LocationListener {
 
@@ -43,14 +46,22 @@ public final class OneTimeLocationListener implements  LocationListener {
         return new OneTimeLocationListener(LocationManager.NETWORK_PROVIDER, context, bus);
     }
 
-    public void register() {
+    public void register() throws NoProviderException {
         final long mMinTime = 0;                // default minimum time between new readings
         final float mMinDistance = 0.0f;        // default minimum distance between old and new readings.
 
         if (!mIsRegistred) {
             mBus.register(this);
-            mLocationManager.requestLocationUpdates(mLocationSource, mMinTime, mMinDistance, this);
             mIsRegistred = true;
+
+            try{
+                mLocationManager.requestSingleUpdate(mLocationSource, this, null);
+            }
+            catch(IllegalArgumentException e) {
+                mBus.unregister(this);
+                mIsRegistred = false;
+                throw new NoProviderException(e.toString());
+            }
         }
     }
 

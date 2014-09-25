@@ -71,12 +71,10 @@ public class GetAddressTask extends AsyncTask<Location, Void, String> {
              * city, and country name.
              */
             String addressText = String.format(
-                                     "%s, %s, %s",
+                                     "%s, %s",
                                      // If there's a street address, add it
                                      address.getMaxAddressLineIndex() > 0
                                      ? address.getAddressLine(0) : "",
-                                     // Locality is usually a city
-                                     address.getLocality(),
                                      // The country of the address
                                      address.getCountryName());
             // Return the text

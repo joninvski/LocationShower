@@ -15,6 +15,7 @@ import butterknife.OnClick;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.walletsaver.locationshower.exception.NoProviderException;
+import com.walletsaver.locationshower.exception.NoProviderException;
 import com.walletsaver.locationshower.LocationShowerApp;
 import com.walletsaver.locationshower.R;
 import com.walletsaver.locationshower.task.GetAddressTask;
@@ -26,7 +27,6 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 import java.util.Formatter;
 import java.util.Locale;
-
 
 import timber.log.Timber;
 
@@ -91,12 +91,12 @@ public class LocationShowerActivity extends FullscreenActivity {
         try {
             Location lastLocationReading = mLocationListener.getLastKnownLocation();
             boolean temporaryLocation = true;
-            showLocation(lastLocationReading, true);
+            showLocation(lastLocationReading, temporaryLocation);
+            mLocationListener.register();
         } catch (NoProviderException e) {
             Timber.e("%s", e);
             alertNoProvider();
         }
-        mLocationListener.register();
     }
 
     @OnClick(R.id.about_address_button)
@@ -164,6 +164,7 @@ public class LocationShowerActivity extends FullscreenActivity {
     }
 
     private void showLocation(Location location, boolean temporaryLocation) {
+        Timber.d("Updating the location in the ui %s", temporaryLocation);
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
@@ -182,13 +183,14 @@ public class LocationShowerActivity extends FullscreenActivity {
         positionTextView.setText(text);
 
         if (mTemporaryLocationCrouton != null) {
-            Timber.d("Hiding old croutons");
+            Timber.d("Hidding old croutons %s", mTemporaryLocationCrouton);
             Crouton.hide(mTemporaryLocationCrouton);
             Crouton.clearCroutonsForActivity(this);
         }
 
         if (temporaryLocation) {
-            mTemporaryLocationCrouton = Crouton.makeText(this, getString(R.string.temporary_location), INFINITE);
+            Timber.d("Temporary location setting");
+            mTemporaryLocationCrouton = Crouton.makeText(this, getString(R.string.update), INFINITE);
             mTemporaryLocationCrouton.setConfiguration(CONFIGURATION_INFINITE);
             mTemporaryLocationCrouton.show();
         }
