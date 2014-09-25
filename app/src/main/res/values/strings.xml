@@ -11,5 +11,6 @@
     <string name="old">Old</string>
     <string name="very_old">Very old</string>
     <string name="recent">Recent</string>
+    <string name="no_geocoder">Unable to fetch address</string>
 
 </resources>

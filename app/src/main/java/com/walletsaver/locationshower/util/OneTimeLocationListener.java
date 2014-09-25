@@ -58,6 +58,7 @@ public final class OneTimeLocationListener implements  LocationListener {
                 mLocationManager.requestSingleUpdate(mLocationSource, this, null);
             }
             catch(IllegalArgumentException e) {
+                Timber.e("%s is not available as a location source",mLocationSource);
                 mBus.unregister(this);
                 mIsRegistred = false;
                 throw new NoProviderException(e.toString());

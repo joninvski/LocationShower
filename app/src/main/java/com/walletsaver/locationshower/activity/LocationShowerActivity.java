@@ -72,7 +72,7 @@ public class LocationShowerActivity extends FullscreenActivity {
             showLocation(lastLocationReading);
         } catch (NoProviderException e) {
             Timber.e("%s", e);
-            alertNoProvider();
+            // No warn the user is needed as this was the old location
         }
     }
 
@@ -92,9 +92,16 @@ public class LocationShowerActivity extends FullscreenActivity {
             Location lastLocationReading = mLocationListener.getLastKnownLocation();
             boolean temporaryLocation = true;
             showLocation(lastLocationReading, temporaryLocation);
+        } catch (NoProviderException e) {
+            Timber.e("%s", e);
+            // No warn the user is needed as this was the old location
+        }
+        try {
+            mLocationListener.unregister();
             mLocationListener.register();
         } catch (NoProviderException e) {
             Timber.e("%s", e);
+            // We have failed the user request. Warn him why!
             alertNoProvider();
         }
     }
@@ -121,6 +128,10 @@ public class LocationShowerActivity extends FullscreenActivity {
             } catch (NoProviderException e) {
                 alertNoProvider();
             }
+        }
+
+        else {
+            Crouton.makeText(this, R.string.no_geocoder, Style.ALERT).show();
         }
     }
 
